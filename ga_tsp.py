@@ -22,7 +22,6 @@ cities_dist_matrix = xl.parse('city_dist_matrix')
 
 # In[5]:
 
-routeLen=10
 class City:
     def __init__(self,name,population,has_petrol):
         self.name=name
@@ -50,7 +49,7 @@ class Fitness:
         self.total_population= 0
         self.maxDistFuel = 0
         self.limitFuelDistance=200
-        self.feasability=0
+        self.feasibility=0
     
     def routeDistance(self):
         pathDistance = 0
@@ -67,7 +66,7 @@ class Fitness:
 
     def maxDistBWFuel(self):
         maxDistance = 0
-        distance = 0 #self.route[0].distance(self.route[1])
+        distance = 0
         for j in range(0,len(self.route)-1):
             fromCity=self.route[j]
             toCity=self.route[j+1]
@@ -95,11 +94,11 @@ class Fitness:
     
     def routeFitness(self):
         if self.maxDistBWFuel() > self.limitFuelDistance:
-            self.feasability=0
+            self.feasibility=0
         else:
-            self.feasability=1
+            self.feasibility=1
 
-        self.fitness = self.routePopulation() - float(self.routeDistance()) if self.feasability == 1 else -1000000.00
+        self.fitness = self.routePopulation() - float(self.routeDistance()) if self.feasibility == 1 else -1000000.00
         return self.fitness
 
 
@@ -111,7 +110,8 @@ class Fitness:
 
 
 def createRoute(cityList):
-    route = random.sample(cityList, routeLen)
+    size=random.randint(7, len(cityList))
+    route = random.sample(cityList, 10)
     return route
 
 
@@ -187,6 +187,7 @@ def breed(parent1, parent2):
     childP2 = []
     
     geneA = int(random.random() * len(parent1))
+    '''
     geneB = int(random.random() * len(parent1))
     
     startGene = min(geneA, geneB)
@@ -196,6 +197,18 @@ def breed(parent1, parent2):
         childP1.append(parent1[i])
         
     childP2 = [item for item in parent2 if item not in childP1]
+
+    
+    '''
+    for i in range(0,len(parent1)):
+        if(i<geneA):
+            childP1.append(parent1[i])
+    i=geneA
+    for item in parent2:
+        if item not in childP1 and i < len(parent1):
+            childP2.append(item)
+            i+=1
+    ''''''
 
     child = childP1 + childP2
     return child
@@ -275,7 +288,7 @@ def geneticAlgorithm(population, popSize, eliteSize, mutationRate, generations):
     pop = initialPopulation(popSize, population)
     print("Initial distance: " + str(Fitness(pop[rankRoutes(pop)[0][0]]).routeDistance()))
     print("Initial population: " + str(Fitness(pop[rankRoutes(pop)[0][0]]).routePopulation()))
-    print("Feasability: " + str(Fitness(pop[rankRoutes(pop)[0][0]]).feasability))
+    print("Feasibility: " + str(Fitness(pop[rankRoutes(pop)[0][0]]).feasibility))
     
     for i in range(0, generations):
         pop = nextGeneration(pop, eliteSize, mutationRate)
@@ -292,7 +305,7 @@ def geneticAlgorithm(population, popSize, eliteSize, mutationRate, generations):
         print("distance: " + str(fitness.distance))
         total_population += fitness.total_population
         print("Population: " + str(fitness.total_population))
-        print("feasability: " + str(fitness.feasability))
+        print("feasibility: " + str(fitness.feasibility))
 
     print("Total distance= "+ str(total_distance))
     print("Total population= " + str(total_population))
@@ -317,7 +330,7 @@ for i in range(0,len(cities.City)):
 # In[ ]:
 
 
-geneticAlgorithm(population=cityList, popSize=100, eliteSize=20, mutationRate=0.01, generations=100)
+geneticAlgorithm(population=cityList, popSize=600, eliteSize=80, mutationRate=0.01, generations=1000)
 
 
 # ## Plot the progress
